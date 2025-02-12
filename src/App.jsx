@@ -8,40 +8,29 @@ function App() {
   const lowercase = useRef()
   const upprecase = useRef()
   const symbol = useRef()
+  const [inpType, setInpType] = useState("password");
 
   // asswordRef.current.setAttribute("type", passwordRef.current.value);
 
-  const getValue = useCallback(() => {
-    if (passwordRef.current) {
-      passwordRef.current.type =
-        passwordRef.current.type === "password" ? "text" : "password";
-    }
+  const togglePassword = useCallback(() => {
+    setInpType((prevType) => (prevType === "password" ? "text" : "password"));
   }, []);
 
-  const sendValue = () => {
-    const value = passwordRef.current.value || '';
-    const hasNum = /\d/.test(value)
-    const isLength = value.length > 8;
+  const checkPassword = () => {
+    const value = passwordRef.current?.value || "";
+
+    const hasNum = /\d/.test(value);
+    const isLength = value.length >= 8;
     const isLower = /[a-z]/.test(value);
     const isUpp = /[A-Z]/.test(value);
     const isSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(value);
 
-    if(numItem.current && hasNum) {
-      numItem.current.classList.add('show')
-    }
-    if (lengthItem.current && isLength) {
-      lengthItem.current.classList.add('show')
-    }
-    if (lowercase.current && isLower) {
-      lowercase.current.classList.add('show')
-    }
-    if (upprecase.current && isUpp) {
-      upprecase.current.classList.add('show')
-    }
-    if(symbol.current && isSymbol){
-      symbol.current.classList.add('show')
-    }
-  }
+    if (numItem.current) numItem.current.classList.toggle("show", hasNum);
+    if (lengthItem.current) lengthItem.current.classList.toggle("show", isLength);
+    if (lowercase.current) lowercase.current.classList.toggle("show", isLower);
+    if (upprecase.current) upprecase.current.classList.toggle("show", isUpp);
+    if (symbol.current) symbol.current.classList.toggle("show", isSymbol);
+  };
 
   return (
     <div className="container d-flex justify-content-center mt-5">
@@ -55,13 +44,14 @@ function App() {
       >
         <div className="input-group mb-3">
           <input
-            type="password"
+            type={inpType}
             className="form-control"
             aria-label="Amount (to the nearest dollar)"
             placeholder="password"
             ref={passwordRef}
+            onChange={checkPassword}
           />
-          <button onClick={getValue} className="input-group-text">
+          <button onClick={togglePassword} className="input-group-text">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -76,14 +66,13 @@ function App() {
           </button>
         </div>
         <h5>password must contains</h5>
-        <ul style={{padding:'5px'}}>
+        <ul style={{padding:'5px', margin:'0'}}>
           <li ref={numItem} style={{padding:'5px'}}>At least 1 number (0...9)</li>
           <li ref={lengthItem} style={{padding:'5px'}}>At least 8 characters length</li>
           <li ref={lowercase} style={{padding:'5px'}}>At least 1 lowercase letter (a...z)</li>
           <li ref={upprecase} style={{padding:'5px'}}>At least 1 upprecase later (A...z)</li>
           <li ref={symbol} style={{padding:'5px'}}>At least 1 special symbol (!...?)</li>
         </ul>
-        <button onClick={sendValue} className="btn btn-info">send</button>
       </div>
     </div>
   );
